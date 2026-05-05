@@ -1,0 +1,50 @@
+{% set footer_content = landing_content.footer|default({}) %}
+{% set social_links = [
+  {'href': facebook_url|default(''), 'icon': 'facebook', 'label': 'Facebook'},
+  {'href': instagram_url|default(''), 'icon': 'instagram', 'label': 'Instagram'},
+  {'href': whatsapp_url|default(''), 'icon': 'whatsapp', 'label': 'WhatsApp'}
+] %}
+
+<footer class="footer mt-5">
+  <div class="container">
+    <div class="footer-main">
+      <div>
+        <div class="footer-title">
+          {{ app_name ?? 'Landing de saúde' }} - {{ footer_content.label|default('Atendimento') }}
+        </div>
+
+        <div class="footer-meta small">
+          {{ company_address ?? footer_content.address|default('Atendimento presencial com horário agendado') }}<br>
+          {{ company_meta ?? footer_content.meta|default('Consultas, check-ups e acompanhamento clínico') }}
+        </div>
+      </div>
+
+      <nav class="footer-social" aria-label="Redes sociais">
+        {% for social in social_links %}
+          {% if social.href and social.href != '#' %}
+            <a class="footer-link" href="{{ social.href }}" target="_blank" rel="noopener noreferrer" aria-label="{{ social.label }}">
+              <i class="bi bi-{{ social.icon }}"></i>
+            </a>
+          {% endif %}
+        {% endfor %}
+      </nav>
+    </div>
+
+    <div class="footer-note small">
+      {{ footer_content.emergency_note|default('Atendimento eletivo. Em caso de urgência ou emergência, procure o pronto atendimento mais próximo.') }}
+    </div>
+
+    <div class="footer-bottom small">
+      <span>© <span id="year">{{ "now"|date("Y") }}</span> — Todos os direitos reservados</span>
+
+      {% if footer_content.credit|default('') %}
+        <span class="footer-credit">{{ footer_content.credit }}</span>
+      {% endif %}
+    </div>
+  </div>
+</footer>
+
+<button class="back-to-top btn btn-primary shadow" id="backToTop"
+        aria-label="Voltar ao topo" title="Voltar ao topo">
+  <i class="bi bi-chevron-up"></i>
+</button>

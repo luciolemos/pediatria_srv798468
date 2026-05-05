@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+{% set typography = landing_content.typography|default({}) %}
+{% set typography_profile = typography.profile|default('clinical') %}
+<html lang="pt-br" data-theme="dark" data-typography="{{ typography_profile|e('html_attr') }}" data-niche="{{ app_slug|default('landing')|e('html_attr') }}">
+<head>
+  {% set meta = seo_meta|default({}) %}
+  {% set meta_image = meta.image|default({}) %}
+  {% set meta_title = meta.title|default(app_name|default('Landing de saúde')) %}
+  {% set meta_description = meta.description|default('Atendimento com hora marcada, equipe organizada e retorno claro.') %}
+  <meta charset="utf-8">
+  <title>{% block title %}{{ meta_title }}{% endblock %}</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{% block meta_description %}{{ meta_description }}{% endblock %}">
+  {% if canonical_url is defined and canonical_url %}
+  <link rel="canonical" href="{{ canonical_url|e('html_attr') }}">
+  <meta property="og:url" content="{{ canonical_url|e('html_attr') }}">
+  {% endif %}
+  <meta property="og:type" content="{{ meta.type|default('website')|e('html_attr') }}">
+  <meta property="og:locale" content="{{ meta.locale|default('pt_BR')|e('html_attr') }}">
+  <meta property="og:site_name" content="{{ meta.site_name|default(app_name|default('Landing de saúde'))|e('html_attr') }}">
+  <meta property="og:title" content="{{ meta_title|e('html_attr') }}">
+  <meta property="og:description" content="{{ meta_description|e('html_attr') }}">
+  {% if meta_image.url|default('') %}
+  <meta property="og:image" content="{{ meta_image.url|e('html_attr') }}">
+  <meta property="og:image:alt" content="{{ meta_image.alt|default(meta_description)|e('html_attr') }}">
+  {% if meta_image.width|default(0) %}
+  <meta property="og:image:width" content="{{ meta_image.width|e('html_attr') }}">
+  {% endif %}
+  {% if meta_image.height|default(0) %}
+  <meta property="og:image:height" content="{{ meta_image.height|e('html_attr') }}">
+  {% endif %}
+  {% endif %}
+  <meta name="twitter:card" content="{{ meta.twitter_card|default('summary_large_image')|e('html_attr') }}">
+  <meta name="twitter:title" content="{{ meta_title|e('html_attr') }}">
+  <meta name="twitter:description" content="{{ meta_description|e('html_attr') }}">
+  {% if meta_image.url|default('') %}
+  <meta name="twitter:image" content="{{ meta_image.url|e('html_attr') }}">
+  {% endif %}
+  {% if should_noindex ?? false %}
+  <meta name="robots" content="noindex, nofollow">
+  {% else %}
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  {% endif %}
+  <meta name="theme-color" content="#0b0f19">
+  <script nonce="{{ csp_nonce ?? '' }}">
+  (function () {
+    const isValidTheme = (value) => value === "dark" || value === "light";
+    const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+    let theme = prefersLight ? "light" : "dark";
+    try {
+      const saved = localStorage.getItem("theme");
+      if (isValidTheme(saved)) theme = saved;
+    } catch (e) {}
+    document.documentElement.setAttribute("data-theme", theme);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", theme === "dark" ? "#0b0f19" : "#f8fafc");
+  })();
+  </script>
+
+  <link rel="icon" href="{{ base_url }}/assets/img/clinic-mark.svg">
+  <link rel="shortcut icon" href="{{ base_url }}/assets/img/clinic-mark.svg">
+  <link rel="apple-touch-icon" href="{{ base_url }}/assets/img/clinic-mark.svg">
+
+  {# ==============================
+     CSS — LIBS
+     ============================== #}
+
+  <link href="{{ base_url }}/assets/vendor/bootstrap/bootstrap.min.css?v={{ asset_version|default('1')|url_encode }}" rel="stylesheet">
+  <link href="{{ base_url }}/assets/vendor/bootstrap-icons/bootstrap-icons.css?v={{ asset_version|default('1')|url_encode }}" rel="stylesheet">
+
+  {# ==============================
+     CSS — APP
+     ============================== #}
+
+  <link href="{{ base_url }}/assets/css/app.css?v={{ asset_version|default('1')|url_encode }}" rel="stylesheet">
+  <link href="{{ base_url }}/assets/css/landing.css?v={{ asset_version|default('1')|url_encode }}" rel="stylesheet">
+  <link
+    href="{{ base_url }}/assets/css/palettes/{{ palette ?? app_palette ?? 'blue' }}.css?v={{ asset_version|default('1')|url_encode }}"
+    rel="stylesheet"
+    id="paletteStylesheet"
+    data-palette-link
+    data-palette-base="{{ base_url }}/assets/css/palettes"
+    data-palette-version="{{ asset_version|default('1')|e('html_attr') }}"
+    data-palette-default="{{ palette ?? app_palette ?? 'blue' }}"
+      data-palette-allowed="{{ (allowed_palettes ?? ['blue', 'red', 'emerald', 'amber', 'violet'])|json_encode|e('html_attr') }}"
+  >
+   {% set warm_palettes = ['blue', 'red', 'emerald'] %}
+   {% for warm_palette in warm_palettes %}
+   {% if warm_palette != (palette ?? app_palette ?? 'blue') %}
+   <link rel="prefetch" href="{{ base_url }}/assets/css/palettes/{{ warm_palette }}.css?v={{ asset_version|default('1')|url_encode }}" as="style">
+   {% endif %}
+   {% endfor %}
+
+  {% if recaptcha_enabled ?? false %}
+  <script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key|url_encode }}" async defer></script>
+  {% endif %}
+  {% if structured_data_json|default('') %}
+  <script type="application/ld+json">{{ structured_data_json|raw }}</script>
+  {% endif %}
+
+  {% block head_extra %}{% endblock %}
+</head>
+
+
+<body class="bg-body text-body antialiased{{ (recaptcha_enabled ?? false) ? ' has-recaptcha' : '' }}">
+
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+{# ==============================
+   CONTEÚDO
+   ============================== #}
+
+{% block content %}{% endblock %}
+
+
+
+{# ==============================
+   SCRIPTS — LIBS
+   ============================== #}
+
+<script defer src="{{ base_url }}/assets/vendor/bootstrap/bootstrap.bundle.min.js?v={{ asset_version|default('1')|url_encode }}"></script>
+
+{# ==============================
+   CONFIG GLOBAL JS
+   ============================== #}
+
+<script nonce="{{ csp_nonce ?? '' }}">
+window.APP = {
+  baseUrl: "{{ base_url }}",
+   env: "{{ app_env ?? 'prod' }}",
+   allowedPalettes: {{ (allowed_palettes ?? ['blue', 'red', 'emerald', 'amber', 'violet'])|json_encode|raw }},
+   recaptcha: {
+     enabled: {{ (recaptcha_enabled ?? false) ? 'true' : 'false' }},
+     siteKey: "{{ recaptcha_site_key|default('')|e('js') }}",
+     action: "{{ recaptcha_action|default('contact_submit')|e('js') }}"
+   }
+};
+</script>
+
+
+{# ==============================
+   JS — APP CORE
+   ============================== #}
+
+<script defer src="{{ base_url }}/assets/js/landing.js?v={{ asset_version|default('1')|url_encode }}"></script>
+
+
+{% block body_extra %}{% endblock %}
+
+</body>
+</html>

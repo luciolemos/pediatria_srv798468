@@ -1,0 +1,86 @@
+{% set nav_content = landing_content.nav|default({}) %}
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top py-3 nav-glass">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{{ base_url ?? '/' }}">
+      <img
+        src="{{ base_url ?? '' }}/assets/img/clinic-mark.svg"
+        alt="{{ app_name ?? 'Landing de saúde' }}"
+        class="navbar-logo"
+        width="38"
+        height="38"
+        loading="eager"
+        decoding="async"
+        fetchpriority="low"
+      >
+      <span class="fw-semibold">{{ app_name ?? 'Landing de saúde' }}</span>
+
+      <span class="badge rounded-pill text-bg-primary-subtle border border-primary-subtle ms-2 d-none d-sm-inline">
+        {{ app_badge ?? nav_content.badge|default('Atendimento') }}
+      </span>
+    </a>
+
+    <div class="d-flex align-items-center nav-mobile-actions ms-auto">
+      <button
+        class="theme-toggle-icon d-lg-none"
+        id="themeToggleMobile"
+        type="button"
+        aria-label="Alternar tema"
+      >
+        <i class="bi bi-moon-stars"></i>
+      </button>
+
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse" data-bs-target="#topNav"
+              aria-controls="topNav" aria-expanded="false" aria-label="Abrir menu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+
+    <div class="collapse navbar-collapse nav-mobile-panel" id="topNav">
+      <div class="nav-collapse-inner w-100">
+        <ul class="navbar-nav nav-main ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item nav-priority-1"><a class="nav-link" href="#top">Home</a></li>
+        <li class="nav-item nav-priority-1"><a class="nav-link" href="#features">Serviços</a></li>
+        <li class="nav-item nav-priority-2"><a class="nav-link" href="#how">Atendimento</a></li>
+        <li class="nav-item nav-priority-3"><a class="nav-link" href="#estrutura">Estrutura</a></li>
+        <li class="nav-item nav-priority-2"><a class="nav-link" href="#form-orcamento">Agendar</a></li>
+        <li class="nav-item nav-priority-2"><a class="nav-link" href="#faq">Dúvidas</a></li>
+        </ul>
+
+        <div class="nav-actions d-flex align-items-stretch align-items-lg-center gap-2 mt-3 mt-lg-0 ms-lg-3">
+          {% if show_palette_selector ?? false %}
+          {% set active_palette = palette ?? app_palette ?? 'blue' %}
+          {% set palettes = allowed_palettes ?? ['blue', 'red', 'emerald', 'amber', 'violet'] %}
+          {% set palette_labels = {
+            'blue': 'azul',
+            'red': 'vermelha',
+            'emerald': 'esmeralda',
+            'amber': 'ambar',
+            'violet': 'violeta'
+          } %}
+          <div class="palette-swatches palette-swatches-inline" role="group" aria-label="Selecionar paleta de cores">
+            {% for palette_name in palettes %}
+            <button
+              type="button"
+              class="palette-dot palette-dot-{{ palette_name }} {{ active_palette == palette_name ? 'active' : '' }}"
+              data-palette-btn="{{ palette_name }}"
+              aria-label="Paleta {{ palette_labels[palette_name]|default(palette_name) }}"
+              title="{{ palette_name|capitalize }}"
+              aria-pressed="{{ active_palette == palette_name ? 'true' : 'false' }}"
+            ></button>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <a class="btn btn-sm btn-primary nav-action-btn cta-track" href="#form-orcamento" data-cta-id="nav_schedule">
+            {{ nav_content.cta|default('Agendar') }}
+          </a>
+          <button class="btn btn-sm btn-outline-light nav-quick-btn d-none d-lg-inline-flex" id="themeToggle" type="button" aria-label="Alternar tema" title="Alternar tema">
+            <i class="bi bi-moon-stars"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

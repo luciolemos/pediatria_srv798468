@@ -1,0 +1,529 @@
+{% extends 'base.twig' %}
+
+{% set content = landing_content|default({}) %}
+{% set seo = content.seo|default({}) %}
+{% set hero = content.hero|default({}) %}
+{% set hero_image = hero.image|default({}) %}
+{% set hero_sources = hero_image.sources|default([]) %}
+{% set hero_image_src = hero_image.src|default('assets/img/hero/medico-640.webp') %}
+{% set hero_image_sizes = hero_image.sizes|default('(max-width: 768px) 92vw, (max-width: 1200px) 44vw, 840px') %}
+{% set hero_mobile = hero_image.mobile|default({}) %}
+{% set hero_mobile_sources = hero_mobile.sources|default([]) %}
+{% set hero_mobile_media = hero_mobile.media|default('(max-width: 576px)') %}
+
+{% block title %}{{ page_title|default(seo.title|default(app_name|default('Landing de saúde'))) }}{% endblock %}
+{% block meta_description %}{{ seo.description|default('Atendimento com hora marcada, equipe organizada e retorno claro.') }}{% endblock %}
+{% block head_extra %}
+{% if hero_mobile.src|default('') %}
+<link
+  rel="preload"
+  as="image"
+  media="{{ hero_mobile_media }}"
+  href="{{ base_url }}/{{ hero_mobile.src }}"
+  imagesrcset="{% for source in hero_mobile_sources %}{{ base_url }}/{{ source.path }} {{ source.width }}w{{ loop.last ? '' : ', ' }}{% endfor %}"
+  imagesizes="{{ hero_mobile.sizes|default('92vw') }}"
+  fetchpriority="high"
+>
+{% endif %}
+<link
+  rel="preload"
+  as="image"
+  {% if hero_mobile.src|default('') %}media="{{ hero_image.desktop_media|default('(min-width: 577px)') }}"{% endif %}
+  href="{{ base_url }}/{{ hero_image_src }}"
+  imagesrcset="{% for source in hero_sources %}{{ base_url }}/{{ source.path }} {{ source.width }}w{{ loop.last ? '' : ', ' }}{% endfor %}"
+  imagesizes="{{ hero_image_sizes }}"
+  fetchpriority="high"
+>
+{% endblock %}
+
+{% block content %}
+
+{% set moments = content.moments|default({}) %}
+{% set services = content.services.items|default([]) %}
+{% set services_section = content.services|default({}) %}
+{% set how = content.how|default({}) %}
+{% set structure = content.structure|default({}) %}
+{% set cta = content.cta|default({}) %}
+{% set form = content.form|default({}) %}
+{% set form_fields = form.fields|default({}) %}
+{% set form_errors_copy = form.errors|default({}) %}
+{% set form_buttons = form.buttons|default({}) %}
+{% set cta_helper_points = cta.helper_points|default([]) %}
+{% set form_helper_points = form.helper_points|default([]) %}
+{% set faq = content.faq|default({}) %}
+{% set floating_whatsapp = content.floating_whatsapp|default({}) %}
+
+<div class="bg-blobs" aria-hidden="true">
+  <span class="blob blob-1"></span>
+  <span class="blob blob-2"></span>
+  <span class="blob blob-3"></span>
+</div>
+
+<div id="top" class="top-anchor"></div>
+{% include 'partials/navbar.twig' %}
+
+<header class="hero py-5 py-lg-6">
+  <div class="container position-relative">
+    <div class="row align-items-center g-4 g-lg-5">
+      <div class="col-lg-6">
+        <div class="hero-badge mb-3">
+          <i class="bi bi-{{ hero.badge_icon|default('heart-pulse') }}"></i>
+          <span>{{ hero.badge|default(app_badge|default('Atendimento humanizado')) }}</span>
+        </div>
+
+        <h1 class="display-5 fw-bold lh-sm mb-3 hero-title-motion">
+          <span class="hero-title-part hero-title-part-1">{{ hero.title_parts[0]|default(app_name|default('Atendimento')) }}</span>
+          <span class="text-gradient hero-title-part hero-title-part-2 hero-title-highlight">{{ hero.title_parts[1]|default('próximo e organizado') }}</span>
+          <span class="hero-title-part hero-title-part-3">{{ hero.title_parts[2]|default('para cuidar de cada solicitação com clareza.') }}</span>
+        </h1>
+
+        <p class="lead text-secondary-emphasis mb-4">
+          {{ hero.lead|default('Atendimento com escuta atenta, agenda organizada e orientação clara para o próximo passo.') }}
+        </p>
+
+        <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3">
+          {% set primary_cta = hero.primary_cta|default({}) %}
+          {% set secondary_cta = hero.secondary_cta|default({}) %}
+          <a class="btn btn-primary btn-lg px-4 cta-track" href="{{ primary_cta.href|default('#form-orcamento') }}" data-cta-id="hero_primary">
+            {{ primary_cta.label|default('Agendar consulta') }} <i class="bi bi-{{ primary_cta.icon|default('arrow-right-short') }}"></i>
+          </a>
+          <a class="btn btn-outline-light btn-lg px-4 cta-track" href="{{ secondary_cta.href|default('#features') }}" data-cta-id="hero_secondary">
+            {{ secondary_cta.label|default('Ver atendimentos') }} <i class="bi bi-{{ secondary_cta.icon|default('clipboard2-pulse') }} ms-1"></i>
+          </a>
+        </div>
+
+        <div class="d-flex flex-wrap gap-3 mt-4 small text-secondary-emphasis">
+          {% for item in hero.trust_items|default([]) %}
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-{{ item.icon }}"></i><span>{{ item.label }}</span>
+          </div>
+          {% endfor %}
+        </div>
+
+        {% set proof = hero.proof|default({}) %}
+        {% set proof_avatar = proof.avatar|default({}) %}
+        {% set proof_avatar_sources = proof_avatar.sources|default([]) %}
+        <div class="hero-proof glass mt-3">
+          {% if proof_avatar.src|default('') %}
+          <div class="proof-avatars" aria-hidden="true">
+            <img
+              src="{{ base_url }}/{{ proof_avatar.src }}"
+              srcset="{% for source in proof_avatar_sources %}{{ base_url }}/{{ source.path }} {{ source.width }}w{{ loop.last ? '' : ', ' }}{% endfor %}"
+              sizes="{{ proof_avatar.sizes|default('56px') }}"
+              alt=""
+              width="{{ proof_avatar.width|default(56) }}"
+              height="{{ proof_avatar.height|default(56) }}"
+              loading="lazy"
+              decoding="async"
+              fetchpriority="low"
+            >
+          </div>
+          {% endif %}
+          <div class="proof-copy">
+            <strong>{{ proof.title|default('Atendimento com continuidade') }}</strong>
+            {% for line in proof.lines|default([]) %}
+            <span>{{ line }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="p-0 hero-media">
+          <picture>
+            {% if hero_mobile.src|default('') %}
+            <source
+              type="image/webp"
+              media="{{ hero_mobile_media }}"
+              srcset="{% for source in hero_mobile_sources %}{{ base_url }}/{{ source.path }} {{ source.width }}w{{ loop.last ? '' : ', ' }}{% endfor %}"
+              sizes="{{ hero_mobile.sizes|default('92vw') }}"
+            >
+            {% endif %}
+            <source
+              type="image/webp"
+              srcset="{% for source in hero_sources %}{{ base_url }}/{{ source.path }} {{ source.width }}w{{ loop.last ? '' : ', ' }}{% endfor %}"
+              sizes="{{ hero_image_sizes }}"
+            >
+            <img
+              src="{{ base_url }}/{{ hero_image_src }}"
+              alt="{{ hero_image.alt|default('Atendimento em consultório') }}"
+                class="img-fluid"
+                fetchpriority="high"
+                loading="eager"
+                decoding="async"
+              width="{{ hero_image.width|default(640) }}"
+              height="{{ hero_image.height|default(360) }}"
+            >
+          </picture>
+        </div>
+
+        <div class="hero-metrics mt-3">
+          {% for metric in hero.metrics|default([]) %}
+          <div class="metric glass">
+            <div class="metric-kpi">{{ metric.kpi }}</div>
+            <div class="metric-label">{{ metric.label }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="py-5 py-lg-6 section-tech">
+  <div class="container">
+    <div class="text-center mb-4 mb-lg-5 section-heading">
+      <h2 class="fw-bold">{{ moments.title|default('Atendimento para diferentes necessidades') }}</h2>
+      <p class="text-secondary-emphasis mb-0">
+        {{ moments.text|default('Uma operação organizada para receber, orientar e acompanhar cada solicitação com clareza.') }}
+      </p>
+    </div>
+    <div class="row g-3 align-items-center justify-content-center">
+      <div class="col-12">
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+          {% for pill in moments.pills|default([]) %}
+          <span class="pill"><i class="bi bi-{{ pill.icon }}"></i> {{ pill.label }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="py-5 py-lg-6 section-tech">
+  <div class="container">
+    <div class="text-center mb-4 mb-lg-5 section-heading">
+      <h2 class="fw-bold">{{ services_section.title|default('Serviços') }}</h2>
+      <p class="text-secondary-emphasis mb-0">
+        {{ services_section.text|default('Frentes de atendimento configuráveis conforme o nicho da landing.') }}
+      </p>
+    </div>
+
+    <div class="row g-3 g-lg-4">
+      {% for service in services %}
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card hover-lift glass card-variant-feature h-100 p-4">
+          <div class="feature-icon"><i class="bi bi-{{ service.icon }}"></i></div>
+          <h3 class="h5 fw-semibold mt-3">{{ service.title }}</h3>
+          <p class="text-secondary-emphasis mb-0">{{ service.text }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section id="how" class="py-5 py-lg-6 section-tech">
+  <div class="container">
+    <div class="text-center mb-4 mb-lg-5 section-heading">
+      <h2 class="fw-bold">{{ how.title|default('Como funciona o atendimento') }}</h2>
+      <p class="text-secondary-emphasis mb-0">
+        {{ how.text|default('Um fluxo simples para reduzir espera, organizar informações e deixar claro o próximo passo.') }}
+      </p>
+    </div>
+
+    <div class="row align-items-center g-4 g-lg-5">
+      <div class="col-lg-6">
+        <ol class="steps">
+          {% for step in how.steps|default([]) %}
+          <li><span class="step-num">{{ loop.index }}</span> {{ step }}</li>
+          {% endfor %}
+        </ol>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="quote-card hover-lift glass card-variant-docs p-4">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="fw-semibold">{{ how.details_title|default('Diferenciais no atendimento') }}</div>
+            <span class="badge text-bg-success-subtle border border-success-subtle">{{ how.details_badge|default('Atendimento') }}</span>
+          </div>
+          <ul class="checklist mb-0">
+            {% for detail in how.details|default([]) %}
+            <li><i class="bi bi-check2-circle"></i> {{ detail }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="estrutura" class="py-5 py-lg-6 section-tech">
+  <div class="container">
+    <div class="text-center mb-4 mb-lg-5 section-heading">
+      <h2 class="fw-bold mb-2">{{ structure.title|default('Estrutura pensada para o paciente') }}</h2>
+      <p class="text-secondary-emphasis mb-0">
+        {{ structure.text|default('A experiência de atendimento combina acolhimento, organização e segurança das informações.') }}
+      </p>
+    </div>
+
+    <div class="row g-3 g-lg-4">
+      {% for item in structure.cards|default([]) %}
+      <div class="col-md-6 col-lg-4">
+        <div class="quote-card hover-lift glass card-variant-docs p-4 h-100">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-{{ item.icon }}"></i><span class="fw-semibold">{{ item.title }}</span>
+          </div>
+          <p class="text-secondary-emphasis mt-2 mb-0">{{ item.text }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section id="cta" class="py-5 py-lg-6 section-tech">
+  <div class="container">
+    <div class="text-center mb-4 mb-lg-5 section-heading">
+      <h2 class="fw-bold">{{ cta.title|default('Precisa marcar uma consulta?') }}</h2>
+      <p class="text-secondary-emphasis mb-0">
+        {{ cta.text|default('Envie seus dados e a equipe retorna para confirmar o melhor horário disponível.') }}
+      </p>
+    </div>
+
+    <div class="cta-box glass cta-box-no-bg p-4 p-lg-5 text-center">
+      <div class="d-flex flex-column flex-sm-row justify-content-center gap-2 gap-sm-3">
+        <a class="btn btn-primary btn-lg px-4 cta-track" href="#form-orcamento" data-cta-id="final_primary">
+          {{ cta.primary_label|default('Solicitar agendamento') }} <i class="bi bi-calendar2-check ms-1"></i>
+        </a>
+        <a class="btn btn-outline-light btn-lg px-4 cta-track" href="{{ whatsapp_url }}" target="_blank" rel="noopener" data-cta-id="final_whatsapp">
+          {{ cta.secondary_label|default('Falar no WhatsApp') }} <i class="bi bi-whatsapp ms-1"></i>
+        </a>
+      </div>
+
+      {% if cta_helper_points %}
+      <div class="d-flex flex-wrap justify-content-center gap-2 gap-lg-3 mt-3">
+        {% for item in cta_helper_points %}
+        <span class="pill">
+          <i class="bi bi-{{ item.icon|default('check2-circle') }}"></i>
+          {{ item.label|default(item) }}
+        </span>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="small text-secondary-emphasis mt-3">
+        {{ cta.note|default('Em caso de urgência ou emergência, procure o pronto atendimento mais próximo.') }}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="form-orcamento" class="py-5 py-lg-6 section-tech">
+  <div class="container">
+    <div class="text-center mb-4 mb-lg-5 section-heading">
+      <h2 class="fw-bold">{{ form.title|default('Solicite seu agendamento') }}</h2>
+      <p class="text-secondary-emphasis mb-0">
+        {{ form.text|default('Informe seus contatos e o motivo da consulta para receber retorno da equipe.') }}
+      </p>
+    </div>
+
+    <div class="cta-box glass p-4 p-lg-5">
+      {% if form_status %}
+        {% set alert_class = form_status.type == 'success' ? 'success' : (form_status.type == 'warning' ? 'warning' : 'danger') %}
+        <div
+          class="alert alert-{{ alert_class }} text-start"
+          data-form-result-event="{{ form_status.tracking_event|default('') }}"
+          data-form-result-id="{{ form_status.event_id|default('') }}"
+          data-form-request-id="{{ form_status.request_id|default('') }}"
+          data-form-result-type="{{ form_status.type|default('') }}"
+        >
+          {{ form_status.message }}
+        </div>
+      {% endif %}
+
+      {% if form_helper_points %}
+      <div class="row g-2 mb-3">
+        {% for item in form_helper_points %}
+        <div class="col-12 col-lg-4">
+          <div class="glass card-variant-proof p-3 h-100">
+            <div class="d-flex align-items-start gap-2">
+              <div class="feature-icon flex-shrink-0">
+                <i class="bi bi-{{ item.icon|default('check2-circle') }}"></i>
+              </div>
+              <div>
+                <div class="fw-semibold">{{ item.title|default('Orientação') }}</div>
+                <div class="text-secondary-emphasis small mt-1">{{ item.text|default('') }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <form class="row g-3 js-lead-form" action="{{ base_url }}/contato" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token|default('') }}">
+        {% if recaptcha_enabled ?? false %}
+        <input
+          type="hidden"
+          name="recaptcha_token"
+          id="recaptchaToken"
+          value=""
+          data-recaptcha-site-key="{{ recaptcha_site_key|e('html_attr') }}"
+          data-recaptcha-action="{{ recaptcha_action|default('contact_submit')|e('html_attr') }}"
+        >
+        {% endif %}
+        <div class="visually-hidden" aria-hidden="true">
+          <label for="contact-website">Website</label>
+          <input type="text" id="contact-website" name="website" value="" tabindex="-1" autocomplete="off">
+        </div>
+        <div class="col-12">
+          <div class="form-step-progress" aria-hidden="true">
+            <div class="form-step-progress-bar" id="leadFormProgressBar"></div>
+          </div>
+          <div class="form-step-labels">
+            <span class="form-step-label active" data-form-step-label="1">{{ form.steps[0]|default('1. Dados') }}</span>
+            <span class="form-step-label" data-form-step-label="2">{{ form.steps[1]|default('2. Consulta') }}</span>
+          </div>
+          <div class="visually-hidden" id="leadFormStatus" aria-live="polite"></div>
+        </div>
+
+        <div class="col-12 form-step" data-form-step="1">
+          <div class="row g-3">
+            <div class="col-12 col-md-6" data-step-field="1">
+              <label class="form-label text-secondary-emphasis" for="cta-nome">{{ form_fields.name_label|default('Nome completo') }}</label>
+              <input class="form-control form-control-lg{{ form_errors.nome is defined ? ' is-invalid' : '' }}" type="text" id="cta-nome" name="nome" value="{{ form_data.nome|e }}" autocomplete="name" required>
+              {% if form_errors.nome is defined %}
+                <div class="invalid-feedback d-block">{{ form_errors_copy.name|default('Informe seu nome.') }}</div>
+              {% endif %}
+            </div>
+            <div class="col-12 col-md-6" data-step-field="1">
+              <label class="form-label text-secondary-emphasis" for="cta-telefone">{{ form_fields.phone_label|default('Telefone / WhatsApp') }}</label>
+              <input class="form-control form-control-lg{{ form_errors.telefone is defined ? ' is-invalid' : '' }}" type="tel" id="cta-telefone" name="telefone" value="{{ form_data.telefone|e }}" autocomplete="tel" inputmode="tel" pattern="[\d\s()+-]{10,20}" placeholder="{{ form_fields.phone_placeholder|default('(84) 99999-9999') }}" required>
+              {% if form_errors.telefone is defined %}
+                <div class="invalid-feedback d-block">{{ form_errors_copy.phone|default('Informe um telefone válido para contato.') }}</div>
+              {% endif %}
+            </div>
+            <div class="col-12 col-md-6" data-step-field="1">
+              <label class="form-label text-secondary-emphasis" for="cta-email">{{ form_fields.email_label|default('Email') }}</label>
+              <input class="form-control form-control-lg{{ form_errors.email is defined ? ' is-invalid' : '' }}" type="email" id="cta-email" name="email" value="{{ form_data.email|e }}" autocomplete="email" required>
+              {% if form_errors.email is defined %}
+                <div class="invalid-feedback d-block">{{ form_errors_copy.email|default('Informe um email válido para retorno.') }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 form-step d-none" data-form-step="2">
+          <div class="row g-3">
+            <div class="col-12" data-step-field="2">
+              <label class="form-label text-secondary-emphasis" for="cta-mensagem">{{ form_fields.message_label|default('Motivo da consulta') }}</label>
+              <textarea class="form-control form-control-lg{{ form_errors.mensagem is defined ? ' is-invalid' : '' }}" id="cta-mensagem" name="mensagem" rows="3" minlength="10" placeholder="{{ form_fields.message_placeholder|default('Ex.: Gostaria de agendar um horário na próxima semana.') }}" required>{{ form_data.mensagem|e }}</textarea>
+              {% if form_errors.mensagem is defined %}
+                <div class="invalid-feedback d-block">{{ form_errors_copy.message|default('Descreva brevemente sua necessidade.') }}</div>
+              {% endif %}
+            </div>
+            <div class="col-12" data-step-field="2">
+              <details class="optional-fields">
+                <summary>{{ form_fields.optional_summary|default('Adicionar convênio ou observações (opcional)') }}</summary>
+                <div class="row g-3 mt-1">
+                  <div class="col-12">
+                    <label class="form-label text-secondary-emphasis" for="cta-empresa">{{ form_fields.optional_label|default('Convênio / observações') }}</label>
+                    <input class="form-control form-control-lg" type="text" id="cta-empresa" name="empresa" value="{{ form_data.empresa|e }}">
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 d-flex flex-column flex-sm-row justify-content-between gap-2">
+          <button class="btn btn-outline-light btn-lg px-4 d-none" type="button" id="leadFormPrev">{{ form_buttons.previous|default('Voltar') }}</button>
+          <div class="ms-sm-auto d-flex gap-2">
+            <button class="btn btn-outline-light btn-lg px-4" type="button" id="leadFormNext">{{ form_buttons.next|default('Próximo') }}</button>
+            <button class="btn btn-primary btn-lg px-4 btn-submit-email cta-track d-none" type="submit" id="leadFormSubmit" data-cta-id="form_submit">
+              {{ form_buttons.submit|default('Enviar solicitação') }} <i class="bi bi-envelope ms-1"></i>
+            </button>
+          </div>
+        </div>
+        {% if form.privacy_note|default('') %}
+        <p class="privacy-disclosure mb-0">
+          {{ form.privacy_note }}
+        </p>
+        {% endif %}
+        {% if recaptcha_enabled ?? false %}
+        <p class="recaptcha-disclosure mb-0">
+          Este formulário é protegido pelo reCAPTCHA e está sujeito à
+          <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>
+          e aos
+          <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Termos de Serviço</a>
+          do Google.
+        </p>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="py-5 py-lg-6 section-tech">
+  <div class="container">
+    <div class="text-center mb-4 mb-lg-5 section-heading">
+      <h2 class="fw-bold">{{ faq.title|default('Dúvidas frequentes') }}</h2>
+      <p class="text-secondary-emphasis mb-0">
+        {{ faq.text|default('Informações essenciais antes de solicitar seu agendamento.') }}
+      </p>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-12">
+        <div class="accordion accordion-flush glass px-3" id="faqAcc">
+          {% for item in faq.items|default([]) %}
+          {% set faq_id = 'q' ~ loop.index %}
+          <div class="accordion-item bg-transparent">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#{{ faq_id }}">
+                {{ item.question }}
+              </button>
+            </h3>
+            <div id="{{ faq_id }}" class="accordion-collapse collapse" data-bs-parent="#faqAcc">
+              <div class="accordion-body text-secondary-emphasis">
+                {{ item.answer }}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% include 'partials/footer.twig' %}
+
+{% if show_palette_selector ?? false %}
+{% set active_palette = palette ?? app_palette ?? 'blue' %}
+<div class="palette-fab d-none d-lg-block" data-palette-fab>
+  <button
+    type="button"
+    class="palette-fab-toggle"
+    id="paletteFabToggle"
+    aria-expanded="false"
+    aria-controls="paletteFabPanel"
+    aria-label="Abrir seletor de paletas"
+  >
+    <i class="bi bi-palette2"></i>
+    <span>Paletas</span>
+  </button>
+  <div class="palette-fab-panel" id="paletteFabPanel" role="group" aria-label="Selecionar paleta de cores">
+    <button type="button" class="palette-dot palette-dot-blue {{ active_palette == 'blue' ? 'active' : '' }}" data-palette-btn="blue" aria-label="Paleta azul" title="Blue"></button>
+    <button type="button" class="palette-dot palette-dot-red {{ active_palette == 'red' ? 'active' : '' }}" data-palette-btn="red" aria-label="Paleta vermelha" title="Red"></button>
+    <button type="button" class="palette-dot palette-dot-emerald {{ active_palette == 'emerald' ? 'active' : '' }}" data-palette-btn="emerald" aria-label="Paleta esmeralda" title="Emerald"></button>
+    <button type="button" class="palette-dot palette-dot-amber {{ active_palette == 'amber' ? 'active' : '' }}" data-palette-btn="amber" aria-label="Paleta âmbar" title="Amber"></button>
+    <button type="button" class="palette-dot palette-dot-violet {{ active_palette == 'violet' ? 'active' : '' }}" data-palette-btn="violet" aria-label="Paleta violeta" title="Violet"></button>
+  </div>
+</div>
+{% endif %}
+
+<a
+  class="whatsapp-float"
+  href="{{ whatsapp_url }}"
+  target="_blank"
+  rel="noopener"
+  aria-label="{{ floating_whatsapp.aria_label|default('Falar no WhatsApp') }}"
+>
+  <i class="bi bi-whatsapp"></i>
+  <span>{{ floating_whatsapp.label|default('WhatsApp') }}</span>
+</a>
+
+{% endblock %}

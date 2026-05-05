@@ -1,0 +1,27 @@
+:root {
+  --bg: #0b0f19;
+  --text: #eef2ff;
+  --muted: #9aa4b2;
+}
+
+[data-theme="light"] {
+  --bg: #ffffff;
+  --text: #0b1220;
+  --muted: #3b4a62;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.bg-body {
+  background-color: var(--bg0, var(--bg)) !important;
+}
+
+.text-body {
+  color: var(--text) !important;
+}
+
+.text-secondary-emphasis {
+  color: var(--muted) !important;
+}
