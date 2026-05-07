@@ -6,6 +6,26 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
+env_value() {
+  local file="$1"
+  local key="$2"
+
+  [[ -f "$file" ]] || return 0
+
+  awk -F '=' -v key="$key" '
+    $1 == key {
+      value = substr($0, index($0, "=") + 1)
+      gsub(/^"/, "", value)
+      gsub(/"$/, "", value)
+      print value
+      exit
+    }
+  ' "$file"
+}
+
+DEFAULT_APP_SLUG="$(env_value "$PROJECT_ROOT/.env.example" APP_SLUG)"
+DEFAULT_APP_SLUG="${DEFAULT_APP_SLUG:-medico}"
+
 echo "[step] Composer validate"
 composer validate --no-check-publish
 
@@ -21,7 +41,7 @@ echo "[step] Landing content validation"
 while IFS= read -r -d '' file; do
   content_name="$(basename "$file" .php)"
   if [[ "$content_name" == "landing" ]]; then
-    php scripts/validate-landing-content.php --project-root "$PROJECT_ROOT" --content landing
+    php scripts/validate-landing-content.php --project-root "$PROJECT_ROOT" --content landing --slug "$DEFAULT_APP_SLUG"
   else
     php scripts/validate-landing-content.php --project-root "$PROJECT_ROOT" --content "$content_name" --slug "$content_name"
   fi

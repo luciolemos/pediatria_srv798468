@@ -34,6 +34,20 @@ preset_slugs() {
   ' "$PROJECT_ROOT/config/presets/niches.php"
 }
 
+auditable_preset_slugs() {
+  local slug
+
+  while IFS= read -r slug; do
+    if [[ -f "$PROJECT_ROOT/public/assets/img/hero/${slug}-640.webp" \
+      && -f "$PROJECT_ROOT/public/assets/img/hero/${slug}-960.webp" \
+      && -f "$PROJECT_ROOT/public/assets/img/hero/${slug}-1896.webp" \
+      && -f "$PROJECT_ROOT/public/assets/img/hero/${slug}-mobile-640.webp" \
+      && -f "$PROJECT_ROOT/public/assets/img/social/${slug}-og.jpg" ]]; then
+      echo "$slug"
+    fi
+  done < <(preset_slugs)
+}
+
 env_value() {
   local file="$1"
   local key="$2"
@@ -62,7 +76,7 @@ fi
 if [[ "$#" -gt 0 ]]; then
   SLUGS=("$@")
 else
-  mapfile -t SLUGS < <(preset_slugs)
+  mapfile -t SLUGS < <(auditable_preset_slugs)
 fi
 
 if [[ "${#SLUGS[@]}" -eq 0 ]]; then

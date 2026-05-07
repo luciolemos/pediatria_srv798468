@@ -88,9 +88,9 @@ echo "[info] JS URL: $JS_URL"
 failures=0
 
 home_html="$(curl -sS -L --max-time "$TIMEOUT" "$BASE_URL")"
-assert_contains "$home_html" 'Cuidado médico' 'hero clínica presente' || failures=$((failures + 1))
-assert_contains "$home_html" 'Serviços da clínica' 'serviços da clínica presentes' || failures=$((failures + 1))
-assert_contains "$home_html" 'Solicite seu agendamento' 'formulário de agendamento presente' || failures=$((failures + 1))
+assert_contains "$home_html" 'Cuidado pediátrico' 'hero pediatria presente' || failures=$((failures + 1))
+assert_contains "$home_html" 'Serviços pediátricos' 'serviços pediátricos presentes' || failures=$((failures + 1))
+assert_contains "$home_html" 'Solicite o agendamento pediátrico' 'formulário de agendamento presente' || failures=$((failures + 1))
 
 landing_js="$(curl -sS -L --max-time "$TIMEOUT" "$JS_URL")"
 assert_contains "$landing_js" 'window.dataLayer.push' 'hook dataLayer presente' || failures=$((failures + 1))
