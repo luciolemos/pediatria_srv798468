@@ -31,42 +31,38 @@ final class CreateLandingScriptTest extends TestCase
         self::assertSame(0, $exitCode, $text);
         self::assertStringContainsString('slug', $text);
         self::assertStringContainsString('pediatria', $text);
-        self::assertStringContainsString('odontologia', $text);
-        self::assertStringContainsString('veterinaria', $text);
-        self::assertStringContainsString('premium', $text);
-        self::assertStringContainsString('VeterinaryCare', $text);
+        self::assertStringContainsString('family', $text);
+        self::assertStringContainsString('MedicalClinic', $text);
     }
 
     public function testCreateLandingUsesSlugContentAndPrunesOtherNiches(): void
     {
         $projectRoot = dirname(__DIR__);
-        $target = $this->rootPath . '/odontologia';
+        $target = $this->rootPath . '/pediatria';
         $script = $projectRoot . '/scripts/create-landing.sh';
 
         $command = 'bash ' . escapeshellarg($script)
-            . ' odontologia --target ' . escapeshellarg($target);
+            . ' pediatria --target ' . escapeshellarg($target);
 
         exec($command, $output, $exitCode);
 
         self::assertSame(0, $exitCode, implode("\n", $output));
         self::assertFileExists($target . '/config/content/landing.php');
-        self::assertFileExists($target . '/config/content/odontologia.php');
-        self::assertFileDoesNotExist($target . '/config/content/pediatria.php');
-        self::assertFileDoesNotExist($target . '/config/content/veterinaria.php');
-        self::assertStringContainsString('APP_CONTENT_FILE="odontologia"', (string) file_get_contents($target . '/.env'));
-        self::assertStringContainsString('APP_SLUG="odontologia"', (string) file_get_contents($target . '/.env'));
-        self::assertFileExists($target . '/public/assets/img/hero/odontologia-640.webp');
-        self::assertFileExists($target . '/public/assets/img/hero/odontologia-mobile-640.webp');
-        self::assertFileExists($target . '/public/assets/img/social/odontologia-og.jpg');
+        self::assertFileExists($target . '/config/content/pediatria.php');
+        self::assertStringContainsString('APP_CONTENT_FILE="pediatria"', (string) file_get_contents($target . '/.env'));
+        self::assertStringContainsString('APP_SLUG="pediatria"', (string) file_get_contents($target . '/.env'));
+        self::assertStringContainsString('APP_WHATSAPP_NUMBER="5584996360721"', (string) file_get_contents($target . '/.env'));
+        self::assertStringContainsString('APP_WHATSAPP_MESSAGE="Oi! Quero conversar sobre o projeto de uma landing page com a NatalCode."', (string) file_get_contents($target . '/.env'));
+        self::assertFileExists($target . '/public/assets/img/hero/pediatria-640.webp');
+        self::assertFileExists($target . '/public/assets/img/hero/pediatria-mobile-640.webp');
+        self::assertFileExists($target . '/public/assets/img/social/pediatria-og.jpg');
         self::assertFileDoesNotExist($target . '/public/assets/img/hero/medico-640.webp');
-        self::assertFileDoesNotExist($target . '/public/assets/img/hero/pediatria-640.webp');
-        self::assertFileDoesNotExist($target . '/public/assets/img/hero/veterinaria-640.webp');
 
         $validateCommand = escapeshellarg(PHP_BINARY)
             . ' ' . escapeshellarg($target . '/scripts/validate-landing-content.php')
             . ' --project-root ' . escapeshellarg($target)
-            . ' --content odontologia'
-            . ' --slug odontologia'
+            . ' --content pediatria'
+            . ' --slug pediatria'
             . ' --strict';
 
         exec($validateCommand, $validateOutput, $validateExitCode);
